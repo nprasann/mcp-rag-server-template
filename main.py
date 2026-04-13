@@ -1,25 +1,39 @@
 from dotenv import load_dotenv
-from server.tools import TOOLS
-from server.handlers import list_sources, search_documents
-from server.handlers import retrieve_chunks
+from mcp.server.fastmcp import FastMCP
 
-def main():
-    load_dotenv()
+from server.handlers import list_sources, search_documents, retrieve_chunks
 
-    print("Available tools:")
-    for tool in TOOLS:
-        print(f"- {tool['name']}: {tool['description']}")
+# Load environment variables
+load_dotenv()
 
-    print("\nTesting list_sources...\n")
-    print(list_sources())
+# Create MCP server
+mcp = FastMCP("mcp-rag-server-template")
 
-    print("\nTesting search_documents...\n")
-    result = search_documents("What are the common steps in RAG?", top_k=3)
-    print(result)
-    
-    print("\nTesting retrieve_chunks...\n")
-    result = retrieve_chunks("What is RAG?", top_k=3)
-    print(result)
+
+@mcp.tool()
+def list_sources_tool() -> dict:
+    """
+    List all supported source files in the data folder.
+    """
+    return list_sources()
+
+
+@mcp.tool()
+def search_documents_tool(question: str, top_k: int = 3) -> dict:
+    """
+    Search indexed documents using a user question and return matching sources/chunks.
+    """
+    return search_documents(question=question, top_k=top_k)
+
+
+@mcp.tool()
+def retrieve_chunks_tool(question: str, top_k: int = 3) -> dict:
+    """
+    Retrieve structured chunks for a user question.
+    """
+    return retrieve_chunks(question=question, top_k=top_k)
+
 
 if __name__ == "__main__":
-    main()
+    print("Starting MCP server...")
+    mcp.run()
