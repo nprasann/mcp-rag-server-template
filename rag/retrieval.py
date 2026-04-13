@@ -3,16 +3,20 @@ from rag.embeddings import embed_texts
 from rag.vectorstore import get_collection, index_chunks, search
 
 
-def chunk_text(text: str, chunk_size: int = 200, overlap: int = 30):
+def chunk_text(text: str, chunk_size: int = 200, overlap: int = 30, min_chunk_length: int = 40):
     """
-    Split text into overlapping chunks.
+    Split text into overlapping chunks and skip very small trailing fragments.
     """
     chunks = []
     start = 0
 
     while start < len(text):
         end = start + chunk_size
-        chunks.append(text[start:end])
+        chunk = text[start:end].strip()
+
+        if len(chunk) >= min_chunk_length:
+            chunks.append(chunk)
+
         start += max(1, chunk_size - overlap)
 
     return chunks
