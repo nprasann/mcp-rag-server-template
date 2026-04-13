@@ -67,3 +67,30 @@ def search_documents(question: str, top_k: int = 3):
         "sources": sources,
         "chunks": retrieved_chunks
     }
+def retrieve_chunks(question: str, top_k: int = 3):
+    """
+    Retrieve structured chunks for a given question.
+    """
+    collection = ensure_index_exists()
+    query_embedding = embed_texts([question])[0]
+    results = search(collection, query_embedding, top_k=top_k)
+
+    retrieved_docs = results.get("documents", [])
+    retrieved_meta = results.get("metadatas", [])
+
+    retrieved_chunks = retrieved_docs[0] if retrieved_docs else []
+    retrieved_metadatas = retrieved_meta[0] if retrieved_meta else []
+
+    structured_results = []
+
+    for i, (chunk, metadata) in enumerate(zip(retrieved_chunks, retrieved_metadatas), start=1):
+        structured_results.append({
+            "source": metadata["source"],
+            "chunk": chunk,
+            "rank": i
+        })
+
+    return {
+        "question": question,
+        "results": structured_results
+    }

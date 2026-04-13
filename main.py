@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from server.tools import TOOLS
 from server.handlers import list_sources, search_documents
-
+from server.handlers import retrieve_chunks
 
 def main():
     load_dotenv()
@@ -16,7 +16,10 @@ def main():
     print("\nTesting search_documents...\n")
     result = search_documents("What are the common steps in RAG?", top_k=3)
     print(result)
-
+    
+    print("\nTesting retrieve_chunks...\n")
+    result = retrieve_chunks("What is RAG?", top_k=3)
+    print(result)
 
 if __name__ == "__main__":
     main()

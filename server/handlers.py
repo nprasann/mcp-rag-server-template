@@ -1,6 +1,6 @@
 from pathlib import Path
 from rag.retrieval import search_documents as rag_search_documents
-
+from rag.retrieval import retrieve_chunks as rag_retrieve_chunks
 
 def list_sources(data_folder="data"):
     """
@@ -26,3 +26,8 @@ def search_documents(question: str, top_k: int = 3):
     Search indexed documents and return matching sources/chunks.
     """
     return rag_search_documents(question=question, top_k=top_k)
+def retrieve_chunks(question: str, top_k: int = 3):
+    """
+    Retrieve structured chunks for a given question.
+    """
+    return rag_retrieve_chunks(question=question, top_k=top_k)
